@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Админ-панель — КиноБилеты</title>
+
+  <link rel="stylesheet" href="./css/style.css" />
+  <style>
+    /* небольшие админ-дополнения */
+    body { background-attachment: fixed; }
+    .admin-wrap { padding: 24px 0 60px; }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .admin-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .admin-item {
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .admin-item strong { font-size: 15px; }
+    .admin-item small { color: rgba(255,255,255,.65); }
+    .admin-item .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .admin-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .admin-form .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 900px){
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="header">
+    <div class="container header__inner">
+      <div class="brand">
+        <span class="brand__logo">⚙️</span>
+        <div class="brand__text">
+          <span class="brand__name">Админ-панель</span>
+          <span class="brand__sub">управление кинотеатром</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav__link nav__link--ghost" href="./index.html">← На сайт</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin-wrap">
+    <div class="container">
+      <h1 style="margin:0 0 16px;">Управление контентом</h1>
+
+      <div class="admin-grid">
+        <!-- ФИЛЬМЫ -->
+        <section class="panel">
+          <h3>Фильмы</h3>
+
+          <div class="admin-actions">
+            <button class="btn btn--primary" id="addFilmBtn">Добавить фильм</button>
+            <button class="btn btn--soft" id="reloadFilmsBtn">Обновить список</button>
+          </div>
+
+          <div class="admin-list" id="filmsList">
+            <!-- список фильмов -->
+          </div>
+        </section>
+
+        <!-- СЕАНСЫ -->
+        <section class="panel">
+          <h3>Сеансы</h3>
+
+          <div class="admin-actions">
+            <button class="btn btn--primary" id="addSessionBtn">Добавить сеанс</button>
+            <button class="btn btn--soft" id="reloadSessionsBtn">Обновить список</button>
+          </div>
+
+          <div class="admin-list" id="sessionsList">
+            <!-- список сеансов -->
+          </div>
+        </section>
+
+        <!-- ФОРМА ФИЛЬМА -->
+        <section class="panel">
+          <h3 id="filmFormTitle">Добавление фильма</h3>
+
+          <form class="admin-form" id="filmForm">
+            <input type="hidden" name="id" />
+
+            <label>Название
+              <input class="input" name="title" required />
+            </label>
+
+            <label>Жанры (через запятую)
+              <input class="input" name="genre" placeholder="Фантастика, Драма" />
+            </label>
+
+            <div class="row">
+              <label>Возраст
+                <input class="input" name="age" placeholder="12+" />
+              </label>
+              <label>Длительность
+                <input class="input" name="duration" placeholder="2 ч 10 мин" />
+              </label>
+            </div>
+
+            <label>Описание
+              <textarea class="input" name="description" rows="3"></textarea>
+            </label>
+
+            
+
+            <label>Постер (PNG/JPG/WebP)
+              <input class="input" type="file" name="posterFile" accept="image/*" />
+            </label>
+
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <img id="posterPreview" alt="Превью постера" style="width:120px; height:160px; object-fit:cover; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04);" />
+              <button class="small-btn" type="button" id="removePosterBtn">Удалить постер</button>
+            </div>
+<div class="row">
+              <label>Рейтинг
+                <input class="input" name="rating" type="number" step="0.1" min="0" max="10" />
+              </label>
+              <label>Премьера
+                <select class="select" name="isPremiere">
+                  <option value="false">Нет</option>
+                  <option value="true">Да</option>
+                </select>
+              </label>
+            </div>
+
+            <button class="btn btn--primary" type="submit">Сохранить фильм</button>
+            <button class="btn btn--soft" type="button" id="cancelFilmEdit">Отмена</button>
+          </form>
+        </section>
+
+        <!-- ФОРМА СЕАНСА -->
+        <section class="panel">
+          <h3 id="sessionFormTitle">Добавление сеанса</h3>
+
+          <form class="admin-form" id="sessionForm">
+            <input type="hidden" name="id" />
+
+            <label>Фильм
+              <select class="select" name="filmId" required></select>
+            </label>
+
+            <div class="row">
+              <label>Дата
+                <input class="input" type="date" name="date" required />
+              </label>
+              <label>Время
+                <input class="input" type="time" name="time" required />
+              </label>
+            </div>
+
+            <div class="row">
+              <label>Зал
+                <input class="input" type="number" name="hall" min="1" required />
+              </label>
+              <label>Цена
+                <input class="input" type="number" name="price" min="0" required />
+              </label>
+            </div>
+
+            <button class="btn btn--primary" type="submit">Сохранить сеанс</button>
+            <button class="btn btn--soft" type="button" id="cancelSessionEdit">Отмена</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="./js/admin.js"></script>
+</body>
+</html>

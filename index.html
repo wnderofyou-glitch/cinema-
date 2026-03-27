@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CinemaSite — билеты в кино</title>
+  <meta name="description" content="Локальный сервис покупки билетов в кино (учебный проект без БД)" />
+
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+  <!-- Background glow -->
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="#" data-nav="home" aria-label="На главную">
+        <span class="brand__logo">🎬</span>
+        <span class="brand__text">
+          <span class="brand__name">КиноБилеты</span>
+          <span class="brand__sub">локальный сервис</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Навигация">
+        <button class="nav__link is-active" data-nav="schedule">Расписание</button>
+        <button class="nav__link" data-nav="poster">Фильмы</button>
+        <button class="nav__link" data-nav="account">Личный кабинет</button>
+        <a class="nav__link nav__link--ghost" href="./admin.html" title="Открыть админ-панель">Админ</a>
+      </nav>
+
+      <div class="header__right">
+        <div class="city">
+          <span class="city__dot"></span>
+          <span class="city__name">Самара</span>
+        </div>
+
+        <button class="icon-btn" data-nav="account" aria-label="Профиль">
+          <span class="icon">👤</span>
+        </button>
+
+        <button class="cart-btn" data-nav="checkout" aria-label="Корзина">
+          <span class="icon">🧾</span>
+          <span class="cart-btn__text">Корзина</span>
+          <span class="cart-badge" id="cartBadge" aria-label="Количество товаров в корзине">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero banner -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__left">
+        <div class="tag">Премьеры • Сеансы • Выбор мест</div>
+        <h1 class="hero__title">Покупай билеты в кино локально</h1>
+        <p class="hero__subtitle">
+          Учебный проект без базы данных: фильмы и сеансы из JSON, заказы — в localStorage.
+        </p>
+        <div class="hero__actions">
+          <button class="btn btn--primary" data-nav="schedule">Открыть расписание</button>
+          <button class="btn btn--soft" data-nav="poster">Смотреть афишу</button>
+        </div>
+        <div class="hero__note">
+          До 10:00 и после 22:00 вход условно «со стороны ул. Мечникова». (демо-уведомление)
+        </div>
+      </div>
+
+      <div class="hero__right">
+        <div class="hero-card">
+          <div class="hero-card__top">
+            <span class="pill">12+</span>
+            <span class="hero-card__title" id="heroFilmTitle">Премьера недели</span>
+          </div>
+
+          <div class="hero-card__media" id="heroPoster">
+            <!-- poster (svg placeholder) вставится через JS -->
+          </div>
+
+          <div class="hero-card__bottom">
+            <button class="btn btn--primary btn--wide" id="heroGoBtn" data-nav="schedule">
+              Выбрать сеанс
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="container">
+
+      <!-- Tabs -->
+      <section class="tabs">
+        <button class="tab is-active" data-view="schedule">Расписание сеансов</button>
+        <button class="tab" data-view="poster">Афиша</button>
+        <button class="tab" data-view="account">Личный кабинет</button>
+        <button class="tab" data-view="checkout">Корзина</button>
+      </section>
+
+      <!-- Views container -->
+      <section class="views">
+        <!-- Schedule -->
+        <div class="view is-active" id="view-schedule" data-view="schedule">
+          <div class="view__head">
+            <h2 class="view__title">Расписание сеансов</h2>
+          </div>
+
+          <div class="date-tabs" id="dateTabs" aria-label="Выбор даты">
+            <!-- Вкладки дат создаст JS -->
+          </div>
+
+          <div class="schedule" id="scheduleList">
+            <!-- Список фильмов + кнопки времени создаст JS -->
+          </div>
+        </div>
+
+        <!-- Poster -->
+        <div class="view" id="view-poster" data-view="poster">
+          <div class="view__head">
+            <h2 class="view__title">Афиша</h2>
+
+            <div class="filters">
+              <input class="input" id="searchInput" type="search" placeholder="Поиск по названию..." />
+
+              <select class="select" id="genreSelect" aria-label="Фильтр по жанру">
+                <option value="">Жанр: все</option>
+              </select>
+
+              <select class="select" id="ageSelect" aria-label="Фильтр по возрасту">
+                <option value="">Возраст: любой</option>
+                <option value="6+">6+</option>
+                <option value="12+">12+</option>
+                <option value="16+">16+</option>
+                <option value="18+">18+</option>
+              </select>
+
+              <input class="input" id="dateInput" type="date" aria-label="Фильтр по дате (по наличию сеансов)" />
+              <button class="btn btn--soft" id="resetFilters">Сбросить</button>
+            </div>
+          </div>
+
+          <div class="grid" id="posterGrid">
+            <!-- Карточки фильмов создаст JS -->
+          </div>
+        </div>
+
+        <!-- Film page (single) -->
+        <div class="view" id="view-film" data-view="film">
+          <div class="film" id="filmPage">
+            <!-- Страница фильма создаст JS -->
+          </div>
+        </div>
+
+        <!-- Checkout -->
+        <div class="view" id="view-checkout" data-view="checkout">
+          <div class="view__head">
+            <h2 class="view__title">Корзина / оформление</h2>
+          </div>
+
+          <div class="checkout" id="checkoutRoot">
+            <!-- Корзина + форма создаст JS -->
+          </div>
+        </div>
+
+        <!-- Account -->
+        <div class="view" id="view-account" data-view="account">
+          <div class="view__head">
+            <h2 class="view__title">Личный кабинет</h2>
+          </div>
+
+          <div class="account" id="accountRoot">
+            <!-- Мои билеты + избранное создаст JS -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal root -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" id="modalClose" aria-label="Закрыть">✕</button>
+
+      <div class="modal__head">
+        <h3 class="modal__title" id="modalTitle">Выбор мест</h3>
+        <div class="modal__meta" id="modalMeta"></div>
+      </div>
+
+      <div class="modal__body">
+        <div class="seat-wrap">
+          <div class="screen">Экран</div>
+
+          <div class="seat-stage">
+            <div class="seat-grid" id="seatGrid" aria-label="Схема зала">
+              <!-- Места создаст seats.js -->
+            </div>
+
+            <div class="zoom">
+              <button class="zoom__btn" id="zoomIn" aria-label="Увеличить">+</button>
+              <button class="zoom__btn" id="zoomOut" aria-label="Уменьшить">−</button>
+            </div>
+          </div>
+
+          <div class="seat-legend">
+            <span class="legend-item"><i class="dot free"></i>Свободно</span>
+            <span class="legend-item"><i class="dot selected"></i>Выбрано</span>
+            <span class="legend-item"><i class="dot taken"></i>Занято</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__sum">
+          <div class="sum__title">Вы выбрали:</div>
+          <div class="sum__value" id="seatSummary">0 мест • 0 ₽</div>
+        </div>
+
+        <button class="btn btn--primary" id="addToCartBtn" disabled>Добавить в корзину</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- Scripts -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
